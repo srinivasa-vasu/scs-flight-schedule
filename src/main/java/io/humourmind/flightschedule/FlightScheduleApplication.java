@@ -1,5 +1,6 @@
 package io.humourmind.flightschedule;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -9,13 +10,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import io.humourmind.flightschedule.domain.FlightSchedule;
+import reactor.core.publisher.Flux;
 
 @SpringBootApplication
-@EnableScheduling
 @EnableBinding(Source.class)
 public class FlightScheduleApplication {
 
@@ -28,17 +27,18 @@ public class FlightScheduleApplication {
 	private String[] bayIds = { "B01", "B22", "B40", "B32", "B20" };
 	private long[] delay = { 0, 5, 10, 20, 30 };
 
-	@Scheduled(fixedDelay = 1000)
 	@Bean
-	public Supplier<FlightSchedule> generateSchedule() {
+	public Supplier<Flux<FlightSchedule>> generateSchedule() {
 		LocalDateTime now = LocalDateTime.now();
 		final Random rand = new Random();
-		return () -> FlightSchedule.builder().flightNo(flights[rand.nextInt(5)])
-				.destination(destinations[rand.nextInt(6)])
-				.sta(now.plusMinutes(delay[rand.nextInt(5)]))
-				.ata(now.plusMinutes(delay[rand.nextInt(5)]))
-				.scheduledBayId(bayIds[rand.nextInt(5)])
-				.actualBayId(bayIds[rand.nextInt(5)]).build();
+		return () -> Flux
+				.just(FlightSchedule.builder().flightNo(flights[rand.nextInt(5)])
+						.destination(destinations[rand.nextInt(6)])
+						.sta(now.plusMinutes(delay[rand.nextInt(5)]))
+						.ata(now.plusMinutes(delay[rand.nextInt(5)]))
+						.scheduledBayId(bayIds[rand.nextInt(5)])
+						.actualBayId(bayIds[rand.nextInt(5)]).build())
+				.delayElements(Duration.ofSeconds(1));
 	}
 
 }
