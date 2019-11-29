@@ -7,8 +7,8 @@ spring:
       bindings:
         output:
           destination: schedule
-          producer:
-            requiredGroups: flight-ops
+#          producer:
+#            requiredGroups: flight-ops
       function:
         definition: generateSchedule
   application:
