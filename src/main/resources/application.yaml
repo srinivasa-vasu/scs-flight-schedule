@@ -6,9 +6,10 @@ spring:
     stream:
       bindings:
         output:
+          binder: rabbit
           destination: schedule
-#          producer:
-#            requiredGroups: flight-ops
+          producer:
+            requiredGroups: flight-ops
       function:
         definition: generateSchedule
   application:
