@@ -3,18 +3,15 @@ name: ci-scs-flight-schedule
 on: [push]
 
 jobs:
-  main:
-    name: check
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[ci skip]')"
-     
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: Build with Maven
-      run: mvn -B package -DskipTests --file pom.xml
+      - if: "!contains(github.event.head_commit.message, '[ci skip]') || !contains(github.event.head_commit.message, '[skip ci]')"
+        name: Check to trigger Build
+        uses: actions/checkout@v1
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file pom.xml
