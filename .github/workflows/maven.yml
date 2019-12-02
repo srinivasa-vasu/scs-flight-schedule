@@ -3,10 +3,10 @@ name: ci-scs-flight-schedule
 on: [push]
 
 jobs:
-  check:
-    runs-on: [ubuntu-latest]
-    steps:
-      - if: "!contains(github.event.head_commit.message, '[ci skip]')"
+  main:
+    name: check
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
      
   build:
     runs-on: ubuntu-latest
